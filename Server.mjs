@@ -23,9 +23,10 @@ server.on("connection", (client) => {
       client.write("tu nickName ahora es: " + nickNames[client.remoteAddress]);
       return;
     }
-    arrayUsers.map((un_usuario) => {
-      un_usuario.write(nickNames[client.remoteAddress] + ":" + data); //aparece en client
-    });
+    for (const key in arrayUsers) {
+      if (arrayUsers[key].remoteAddress === client.remoteAddress) continue;
+      arrayUsers[key].write(nickNames[client.remoteAddress] + ":" + data);
+    }
     console.log(nickNames[client.remoteAddress] + " : " + data);
   });
 
