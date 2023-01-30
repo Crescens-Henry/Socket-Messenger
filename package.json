@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ansi-styles": "^6.2.1",
+    "chalk": "^5.2.0"
+  }
+}

@@ -1,6 +1,7 @@
 console.clear();
 import { log } from "console";
 import net from "net";
+import chalk from "chalk";
 
 const server = net.createServer();
 const arrayUsers = [];
@@ -10,43 +11,97 @@ const nickNames = {};
 
 server.on("connection", (client) => {
   if (nickNames[client.remoteAddress] === undefined) {
-    nickNames[client.remoteAddress] = client.remoteAddress;
-    client.write("Escribe tu nombre de usuario");
+    nickNames[client.remoteAddress] = {
+      nickName: client.remoteAddress,
+      R: Math.ceil(Math.random() * 255),
+      G: Math.ceil(Math.random() * 255),
+      B: Math.ceil(Math.random() * 255),
+    };
+    client.write(chalk.bgBlue.bold("Escribe tu nombre de usuario"));
   }
 
   arrayUsers.push(client);
 
-  console.log("se ha conectado: " + nickNames[client.remoteAddress]);
+  console.log(
+    "se ha conectado: " +
+      chalk
+        .rgb(
+          nickNames[client.remoteAddress].R,
+          nickNames[client.remoteAddress].G,
+          nickNames[client.remoteAddress].B
+        )
+        .underline(nickNames[client.remoteAddress].nickName)
+  );
   client.on("data", (data) => {
-    if (nickNames[client.remoteAddress] === client.remoteAddress) {
-      nickNames[client.remoteAddress] = data.toString().trim();
-      client.write("tu nickName ahora es: " + nickNames[client.remoteAddress]);
+    if (nickNames[client.remoteAddress].nickName === client.remoteAddress) {
+      nickNames[client.remoteAddress].nickName = data.toString().trim();
+      client.write(
+        chalk
+          .rgb(
+            nickNames[client.remoteAddress].R,
+            nickNames[client.remoteAddress].G,
+            nickNames[client.remoteAddress].B
+          )
+          .underline(
+            "ahora tu nickname es: " + nickNames[client.remoteAddress].nickName
+          )
+      );
+      client.write(chalk.bgGreen.bold("\n msj:"));
       return;
     }
     for (const key in arrayUsers) {
       if (arrayUsers[key].remoteAddress === client.remoteAddress) continue;
-      arrayUsers[key].write(nickNames[client.remoteAddress] + ":" + data);
-    }
-    console.log(nickNames[client.remoteAddress] + " : " + data);
-  });
-
-  client.on("close", () => {
-    arrayUsers.map((un_usuario) => {
-      un_usuario.write(
-        nickNames[client.remoteAddress] + " ha salido del servidor"
+      arrayUsers[key].write(
+        chalk
+          .rgb(
+            nickNames[client.remoteAddress].R,
+            nickNames[client.remoteAddress].G,
+            nickNames[client.remoteAddress].B
+          )
+          .underline(nickNames[client.remoteAddress].nickName) +
+          ":" +
+          data
       );
-    });
+    }
+
+    console.log(
+      chalk
+        .rgb(
+          nickNames[client.remoteAddress].R,
+          nickNames[client.remoteAddress].G,
+          nickNames[client.remoteAddress].B
+        )
+        .underline(nickNames[client.remoteAddress].nickName) +
+        ":" +
+        data
+    );
   });
 
   client.on("error", (err) => {
     if (err.errno == -4077) {
       arrayUsers.map((un_usuario) => {
         un_usuario.write(
-          nickNames[client.remoteAddress] + " ha salido del servidor"
+          chalk
+            .rgb(
+              nickNames[client.remoteAddress].R,
+              nickNames[client.remoteAddress].G,
+              nickNames[client.remoteAddress].B
+            )
+            .underline(nickNames[client.remoteAddress].nickName) +
+            " ha salido del servidor"
         );
       });
 
-      console.log(nickNames[client.remoteAddress] + " ha salido del servidor");
+      console.log(
+        chalk
+          .rgb(
+            nickNames[client.remoteAddress].R,
+            nickNames[client.remoteAddress].G,
+            nickNames[client.remoteAddress].B
+          )
+          .underline(nickNames[client.remoteAddress].nickName) +
+          " ha salido del servidor"
+      );
     } else {
       console.error(err);
     }
@@ -57,5 +112,5 @@ server.on("error", (err) => {
 });
 
 server.listen(port, host, () => {
-  console.log("Servidor a la escucha");
+  console.log("Servidor a la escucha \nPuerto-> " + port + "\nHost->" + host);
 });
