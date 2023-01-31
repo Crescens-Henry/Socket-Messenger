@@ -46,7 +46,6 @@ server.on("connection", (client) => {
             "ahora tu nickname es: " + nickNames[client.remoteAddress].nickName
           )
       );
-      client.write(chalk.bgGreen.bold("\n msj:"));
       return;
     }
     for (const key in arrayUsers) {
